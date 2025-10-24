@@ -1,0 +1,34 @@
+#include "cordiccart2pol.h"
+#include <cmath>
+#include <math.h>
+
+input_t Kvalues[NO_ITER] = {1,    0.500000000000000,    0.250000000000000,    0.125000000000000,    0.0625000000000000,    0.0312500000000000,    0.0156250000000000,    0.00781250000000000,    0.00390625000000000,    0.00195312500000000,    0.000976562500000000,    0.000488281250000000,    0.000244140625000000,    0.000122070312500000,    6.10351562500000e-05,    3.05175781250000e-05, 1.52587890625000e-5, 7.6293945312500e-6, 3.81469726562500e-6, 1.907348632812500e-6};
+
+theta_t angles[NO_ITER] = {0.785398163397448,    0.463647609000806,    0.244978663126864,    0.124354994546761,    0.0624188099959574,    0.0312398334302683,    0.0156237286204768,    0.00781234106010111,    0.00390623013196697,    0.00195312251647882,    0.000976562189559320,    0.000488281211194898,    0.000244140620149362,    0.000122070311893670,    6.10351561742088e-05,    3.05175781155261e-05, 1.52587890613158000E-05,    7.62939453110197000E-06,    3.81469726560650000E-06,    1.90734863281019000E-06};
+
+theta_t PI = (theta_t) M_PI;
+//
+void cordiccart2pol(input_t x, input_t y, radius_t * r,  theta_t * theta)
+{
+    theta_t theta_base = 0;
+    input_t current_x = (x > 0) ? x : (input_t) -x;
+    input_t current_y = y;
+    
+    for (int i = 0; i < 20; i++) {
+        int sigma = (current_y > 0) ? -1 : 1;
+
+        input_t x_shift = sigma * current_y * Kvalues[i];
+        input_t y_shift = sigma * current_x * Kvalues[i];
+
+        current_x = current_x - x_shift;
+        current_y = current_y + y_shift;
+
+        theta_base = theta_base - sigma * angles[i];
+
+    }
+    
+    theta_base = (x < 0) ? (y > 0) ? (theta_t) (PI - theta_base) : (theta_t) (-PI - theta_base) : theta_base;
+
+    *r = (radius_t) (current_x * (input_t) 0.6072529350088812561694);
+    *theta = theta_base;
+}
